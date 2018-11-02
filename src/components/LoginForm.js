@@ -1,11 +1,29 @@
 import React, { Component } from "react";
+import firebase from "firebase";
 import { Button, Card, CardSection, Input } from "./common";
 
 class LoginForm extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
+    error: ""
   };
+
+  onButtonPress() {
+    const { email, password } = this.state;
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch(() => {
+        firebase
+          .auth()
+          .createUserWuthEmailAndPassword(email, password)
+          .catch(() => {
+            this.setState({ error: "Authentication Failed." });
+          });
+      });
+  }
 
   render() {
     return (
@@ -31,7 +49,7 @@ class LoginForm extends Component {
         </CardSection>
 
         <CardSection>
-          <Button>Log in</Button>
+          <Button onPress={this.onButtonPress.bind(this)}>Log in</Button>
         </CardSection>
       </Card>
     );
